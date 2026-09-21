@@ -1,6 +1,6 @@
 public with sharing class MyAccController {
     public MyAccController() {
-
+        System.debug('MyAccController');
     }
 
     public static List<Account> getAccounts() {
