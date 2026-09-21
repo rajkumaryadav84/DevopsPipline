@@ -8,7 +8,7 @@
 #
 # BRANCH → ORG MAPPING:
 # SFQA → DEV Sandbox    (NoTestRun)
-# main    → PRODUCTION     (RunAllTestsInOrg)
+# master    → PRODUCTION     (RunAllTestsInOrg)
 # ================================================================
 
 name: Salesforce Delta Pipeline
@@ -17,11 +17,11 @@ on:
   push:
     branches:
       - SFQA
-      - main
+      - master
   pull_request:
     branches:
       - SFQA
-      - main
+      - master
 
 jobs:
   deploy:
@@ -72,12 +72,12 @@ jobs:
             echo "ENV_NAME=QA" >> $GITHUB_ENV
             echo "-> Matched SFQA branch. Setting target to QA environment."
 
-          elif [ "${{ github.ref_name }}" == "main" ] || \
-               [ "${{ github.base_ref }}" == "main" ]; then
+          elif [ "${{ github.ref_name }}" == "master" ] || \
+               [ "${{ github.base_ref }}" == "master" ]; then
             echo "AUTH_URL=${{ secrets.SFDX_AUTH_URL_PROD }}" >> $GITHUB_ENV
             echo "TEST_LEVEL=RunAllTestsInOrg" >> $GITHUB_ENV
             echo "ENV_NAME=NagDev" >> $GITHUB_ENV
-            echo "-> Matched main branch. Setting target to Production environment."
+            echo "-> Matched master branch. Setting target to Production environment."
           fi
 
       # ----------------------------------------------------------------
