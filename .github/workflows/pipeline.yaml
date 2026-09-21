@@ -163,7 +163,8 @@ jobs:
             
             if [ "${{ env.TEST_LEVEL }}" == "RunSpecifiedTests" ] && [ -n "${{ env.SPECIFIC_TESTS }}" ]; then
               echo "Running validation with specified test classes: ${{ env.SPECIFIC_TESTS }}"
-              sf project deploy validate \
+              sf project deploy start \
+                --dry-run \
                 --manifest delta/package/package.xml \
                 --target-org target-org \
                 --test-level RunSpecifiedTests \
@@ -171,7 +172,8 @@ jobs:
                 --wait 60
             else
               echo "Running validation with test level: ${{ env.TEST_LEVEL }}"
-              sf project deploy validate \
+              sf project deploy start \
+                --dry-run \
                 --manifest delta/package/package.xml \
                 --target-org target-org \
                 --test-level ${{ env.TEST_LEVEL }} \
@@ -180,8 +182,7 @@ jobs:
             echo "Validation completed successfully."
           else
             echo "No Salesforce metadata changes found. Skipping validation."
-          fi
-
+          fi      
       # ----------------------------------------------------------------
       # 9. Deploy Delta Package (Push event)
       # ----------------------------------------------------------------
