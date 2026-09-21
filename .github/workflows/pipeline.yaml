@@ -182,7 +182,7 @@ jobs:
             echo "Validation completed successfully."
           else
             echo "No Salesforce metadata changes found. Skipping validation."
-          fi
+          fi      
       # ----------------------------------------------------------------
       # 9. Deploy Delta Package (Push event)
       # ----------------------------------------------------------------
