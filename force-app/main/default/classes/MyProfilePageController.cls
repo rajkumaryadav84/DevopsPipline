@@ -13,6 +13,7 @@ public with sharing class MyProfilePageController {
 
     public void setUser(User user) {
         this.user = user;
+        System.debug('User set to: ' + user);
     }
     public MyProfilePageController() {
         user = [SELECT id, email, username, usertype, communitynickname, timezonesidkey, languagelocalekey, firstname, lastname, phone, title,
