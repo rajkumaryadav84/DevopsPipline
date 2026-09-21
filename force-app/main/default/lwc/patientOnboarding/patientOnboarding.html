@@ -1,0 +1,56 @@
+<template>
+
+    <lightning-card title="Patient Onboarding">
+
+        <c-patient-personal-info
+            onvaluechange={handleValueChange}>
+        </c-patient-personal-info>
+
+        <c-patient-contact-info
+            onvaluechange={handleValueChange}>
+        </c-patient-contact-info>
+
+        <c-patient-insurance-info
+            onvaluechange={handleValueChange}>
+        </c-patient-insurance-info>
+
+        <c-patient-emergency-contact
+            onvaluechange={handleValueChange}>
+        </c-patient-emergency-contact>
+
+        <c-patient-medical-info
+            onvaluechange={handleValueChange}>
+        </c-patient-medical-info>
+
+        <c-patient-consent-info
+            onvaluechange={handleValueChange}>
+        </c-patient-consent-info>
+
+        <c-patient-verification-info
+            verification-status="Pending Verification"
+            verification-method="Email">
+        </c-patient-verification-info>
+
+        <div class="slds-p-top_large slds-align_absolute-center">
+<lightning-button
+    label="Save Draft"
+    variant="neutral"
+    onclick={handleSaveDraft}>
+</lightning-button>
+
+<lightning-button
+    label="Submit"
+    variant="brand"
+    onclick={handleSubmit}>
+</lightning-button>
+<lightning-button
+    label="Resend Verification Email"
+    variant="brand-outline"
+    onclick={handleResendEmail}
+    if:true={showResendButton}>
+</lightning-button>
+        </div>
+
+    </lightning-card>
+
+</template>

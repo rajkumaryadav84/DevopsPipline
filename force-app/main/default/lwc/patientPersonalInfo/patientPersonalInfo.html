@@ -1,0 +1,71 @@
+<template>
+
+    <lightning-card title="Personal Information">
+
+        <div class="slds-grid slds-wrap">
+
+            <div class="slds-col slds-size_1-of-2">
+
+                <lightning-input
+
+                    label="First Name"
+
+                    name="firstName"
+
+                    onchange={handleChange}>
+
+                </lightning-input>
+
+            </div>
+
+            <div class="slds-col slds-size_1-of-2">
+
+                <lightning-input
+
+                    label="Last Name"
+
+                    name="lastName"
+
+                    onchange={handleChange}>
+
+                </lightning-input>
+
+            </div>
+
+            <div class="slds-col slds-size_1-of-2">
+
+                <lightning-input
+
+                    type="date"
+
+                    label="DOB"
+
+                    name="dob"
+
+                    onchange={handleChange}>
+
+                </lightning-input>
+
+            </div>
+
+            <div class="slds-col slds-size_1-of-2">
+
+                <lightning-combobox
+
+                    label="Gender"
+
+                    name="gender"
+
+                    options={genderOptions}
+
+                    onchange={handleChange}>
+
+                </lightning-combobox>
+
+            </div>
+
+        </div>
+
+    </lightning-card>
+
+</template>

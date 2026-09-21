@@ -1,0 +1,61 @@
+<template>
+    <lightning-card title="Contact Information" icon-name="standard:contact">
+
+        <div class="slds-p-around_medium">
+
+            <div class="slds-grid slds-wrap slds-gutters">
+
+                <!-- Mobile Number -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="tel"
+                        label="Mobile Number"
+                        name="mobileNumber"
+                        value={contact.mobileNumber}
+                        required
+                        maxlength="10"
+                        onchange={handleChange}>
+                    </lightning-input>
+                </div>
+
+                <!-- Alternate Phone -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="tel"
+                        label="Alternate Phone"
+                        name="alternatePhone"
+                        value={contact.alternatePhone}
+                        maxlength="10"
+                        onchange={handleChange}>
+                    </lightning-input>
+                </div>
+
+                <!-- Email -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="email"
+                        label="Email Address"
+                        name="email"
+                        value={contact.email}
+                        required
+                        onchange={handleChange}>
+                    </lightning-input>
+                </div>
+
+                <!-- Home Address -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-textarea
+                        label="Home Address"
+                        name="homeAddress"
+                        value={contact.homeAddress}
+                        required
+                        onchange={handleChange}>
+                    </lightning-textarea>
+                </div>
+
+            </div>
+
+        </div>
+
+    </lightning-card>
+</template>

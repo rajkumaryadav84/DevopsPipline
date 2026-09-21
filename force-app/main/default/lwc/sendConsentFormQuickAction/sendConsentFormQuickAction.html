@@ -1,0 +1,58 @@
+<template>
+    <lightning-quick-action-panel header="Send Consent Form">
+        <div class="slds-p-around_small">
+            <template if:true={error}>
+                <div class="slds-text-color_error slds-m-bottom_small" role="alert">{error}</div>
+            </template>
+
+            <lightning-record-picker
+                label="Authorization Form Text"
+                object-api-name="AuthorizationFormText"
+                filter={formTextFilter}
+                onchange={handleAuthFormTextChange}
+                class="slds-m-bottom_small"
+            ></lightning-record-picker>
+
+            <template if:true={missingFields.length}>
+                <div class="slds-text-color_error slds-m-bottom_small" role="alert">
+                    This Lead is missing data required by this form: {missingFieldsLabel}. Update the Lead record
+                    before sending.
+                </div>
+            </template>
+
+            <lightning-input
+                type="email"
+                label="Send To"
+                required
+                value={toAddress}
+                onchange={handleToAddressChange}
+                class="slds-m-bottom_small"
+            ></lightning-input>
+
+            <template if:true={isPreparing}>
+                <lightning-spinner alternative-text="Preparing consent form" size="small"></lightning-spinner>
+            </template>
+        </div>
+
+        <div slot="footer">
+            <lightning-button label="Cancel" onclick={handleCancel}></lightning-button>
+            <lightning-button
+                variant="brand"
+                label="Send"
+                onclick={handleSend}
+                disabled={isSendDisabled}
+                class="slds-m-left_x-small"
+            ></lightning-button>
+        </div>
+    </lightning-quick-action-panel>
+
+    <div style="position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden;">
+        <iframe
+            src={rendererUrl}
+            onload={handleRendererLoad}
+            title="Consent PDF Renderer"
+            width="700"
+            height="10"
+        ></iframe>
+    </div>
+</template>

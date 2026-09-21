@@ -1,0 +1,50 @@
+<template>
+
+    <lightning-card title="Identity Verification" icon-name="standard:identity">
+
+        <div class="slds-p-around_medium">
+
+            <div class="slds-grid slds-wrap slds-gutters">
+
+                <!-- Verification Status -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        label="Verification Status"
+                        value={verificationStatus}
+                        disabled>
+                    </lightning-input>
+                </div>
+
+                <!-- Verification Method -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        label="Verification Method"
+                        value={verificationMethod}
+                        disabled>
+                    </lightning-input>
+                </div>
+
+                <!-- Verification Date -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="datetime"
+                        label="Verification Date"
+                        value={verificationDate}
+                        disabled>
+                    </lightning-input>
+                </div>
+
+            </div>
+
+            <!-- Verification Message -->
+            <template if:true={message}>
+                <div class="slds-m-top_medium slds-text-align_center">
+                    <lightning-formatted-text value={message}></lightning-formatted-text>
+                </div>
+            </template>
+
+        </div>
+
+    </lightning-card>
+
+</template>

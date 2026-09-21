@@ -1,0 +1,54 @@
+<template>
+    <lightning-card title="Medical Information" icon-name="standard:care_plan">
+
+        <div class="slds-p-around_medium">
+
+            <div class="slds-grid slds-wrap slds-gutters">
+
+                <!-- Primary Care Physician -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="text"
+                        label="Primary Care Physician"
+                        name="primaryCarePhysician"
+                        value={medical.primaryCarePhysician}
+                        onchange={handleChange}>
+                    </lightning-input>
+                </div>
+
+                <!-- Allergies -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-textarea
+                        label="Allergies"
+                        name="allergies"
+                        value={medical.allergies}
+                        onchange={handleChange}>
+                    </lightning-textarea>
+                </div>
+
+                <!-- Current Medications -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-textarea
+                        label="Current Medications"
+                        name="currentMedications"
+                        value={medical.currentMedications}
+                        onchange={handleChange}>
+                    </lightning-textarea>
+                </div>
+
+                <!-- Existing Medical Conditions -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-textarea
+                        label="Existing Medical Conditions"
+                        name="existingMedicalConditions"
+                        value={medical.existingMedicalConditions}
+                        onchange={handleChange}>
+                    </lightning-textarea>
+                </div>
+
+            </div>
+
+        </div>
+
+    </lightning-card>
+</template>

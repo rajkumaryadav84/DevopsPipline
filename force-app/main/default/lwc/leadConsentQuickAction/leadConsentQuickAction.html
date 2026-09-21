@@ -1,0 +1,81 @@
+<template>
+    <lightning-quick-action-panel header="Capture Consent">
+        <div class="slds-p-around_small">
+            <template if:true={error}>
+                <div class="slds-text-color_error slds-m-bottom_small" role="alert">{error}</div>
+            </template>
+
+            <lightning-input
+                label="Name"
+                required
+                value={name}
+                onchange={handleNameChange}
+                class="slds-m-bottom_small"
+            ></lightning-input>
+
+            <lightning-record-picker
+                label="Authorization Form Text"
+                object-api-name="AuthorizationFormText"
+                filter={recordPickerFilter}
+                onchange={handleAuthFormTextChange}
+                class="slds-m-bottom_small"
+            ></lightning-record-picker>
+
+            <lightning-combobox
+                label="Consent Captured Source Type"
+                value={consentCapturedSourceType}
+                options={sourceTypeOptions}
+                onchange={handleSourceTypeChange}
+                class="slds-m-bottom_small"
+            ></lightning-combobox>
+
+            <lightning-input
+                type="datetime"
+                label="Consent Captured Date Time"
+                value={consentCapturedDateTime}
+                onchange={handleDateTimeChange}
+                class="slds-m-bottom_small"
+            ></lightning-input>
+
+            <lightning-combobox
+                label="Status"
+                value={status}
+                options={statusOptions}
+                onchange={handleStatusChange}
+                class="slds-m-bottom_small"
+            ></lightning-combobox>
+
+            <lightning-input
+                type="email"
+                label="Email"
+                value={email}
+                onchange={handleEmailChange}
+                class="slds-m-bottom_small"
+            ></lightning-input>
+
+            <div class="slds-m-top_small">
+                <lightning-file-upload
+                    label="Upload Consent Document"
+                    name="consentFileUploader"
+                    record-id={recordId}
+                    accept={acceptedFormats}
+                    onuploadfinished={handleUploadFinished}
+                ></lightning-file-upload>
+                <template if:true={uploadedFileName}>
+                    <p class="slds-text-body_small slds-m-top_x-small">Uploaded: {uploadedFileName}</p>
+                </template>
+            </div>
+        </div>
+
+        <div slot="footer">
+            <lightning-button label="Cancel" onclick={handleCancel}></lightning-button>
+            <lightning-button
+                variant="brand"
+                label="Save"
+                onclick={handleSave}
+                disabled={isSaving}
+                class="slds-m-left_x-small"
+            ></lightning-button>
+        </div>
+    </lightning-quick-action-panel>
+</template>

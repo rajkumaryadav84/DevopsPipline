@@ -1,0 +1,35 @@
+<template>
+    <div class="c-description">
+        <lightning-layout-item flexibility="auto">
+            <div class="custom-box">
+                <div>
+
+                    <lightning-icon icon-name={iconName} alternative-text={heading} title="medium (default)"></lightning-icon>
+
+                    <a class="c-heading" onclick={handleClick}>{heading}</a>
+
+                    <template if:true={noRecord}>
+                        <div class="slds-text-body_small c-no-record">
+                            (There are NO records to navigate to - Clickable link will NOT work)
+                        </div>
+                    </template>
+                </div>
+
+               
+                <lightning-formatted-rich-text class="slds-text-body_regular c-feature-desc" value={cloudDetail}></lightning-formatted-rich-text>
+                <template if:true={secondaryTextPresent}>
+                    <div class="slds-text-body_regular c-feature-desc-second">{secondaryText}</div>
+                </template>
+
+                <template if:true={insideLinkPresent}>
+                    <div class="slds-text-body_regular c-feature-desc-second">
+                        {insideLinkBeforeText}
+                    	<lightning-formatted-url value={insideLink} label={insideLinkText} target="_blank"></lightning-formatted-url>
+                        {insideLinkAfterText}
+                    </div>
+                </template>
+
+            </div>
+        </lightning-layout-item>
+    </div>
+</template>

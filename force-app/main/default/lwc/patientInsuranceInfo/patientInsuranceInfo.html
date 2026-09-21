@@ -1,0 +1,68 @@
+<template>
+    <lightning-card title="Insurance Information" icon-name="standard:account">
+
+        <div class="slds-p-around_medium">
+
+            <div class="slds-grid slds-wrap slds-gutters">
+
+                <!-- Insurance Provider -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-combobox
+                        label="Insurance Provider"
+                        name="insuranceProvider"
+                        value={insurance.insuranceProvider}
+                        options={insuranceProviderOptions}
+                        onchange={handleChange}>
+                    </lightning-combobox>
+                </div>
+
+                <!-- Member ID -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="text"
+                        label="Member ID"
+                        name="memberId"
+                        value={insurance.memberId}
+                        onchange={handleChange}>
+                    </lightning-input>
+                </div>
+
+                <!-- Group Number -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="text"
+                        label="Group Number"
+                        name="groupNumber"
+                        value={insurance.groupNumber}
+                        onchange={handleChange}>
+                    </lightning-input>
+                </div>
+
+                <!-- Policy Holder Name -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="text"
+                        label="Policy Holder Name"
+                        name="policyHolderName"
+                        value={insurance.policyHolderName}
+                        onchange={handleChange}>
+                    </lightning-input>
+                </div>
+
+                <!-- Policy Effective Date -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="date"
+                        label="Policy Effective Date"
+                        name="policyEffectiveDate"
+                        value={insurance.policyEffectiveDate}
+                        onchange={handleChange}>
+                    </lightning-input>
+                </div>
+
+            </div>
+
+        </div>
+
+    </lightning-card>
+</template>

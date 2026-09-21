@@ -1,0 +1,37 @@
+<template>
+    <lightning-card footer="" title="">
+        <h1 class="slds-text-heading_medium">{app_welcome_text}</h1> 
+       
+        <div class="c-footer" >
+            <a href="/lightning/app/c__Learning_Home/page/home">Return to Learning Home</a>
+        </div>
+        
+        <div class="c-container"> 
+            <lightning-layout>
+                <lightning-layout-item flexibility="auto" padding="around-small">
+                    <p class="c-description">{app_description}</p>
+ 
+                    <template if:true={featureRecords.data}>
+                        <template for:each={featureRecords.data} for:item="featureRecord">
+                            <c-feature-child
+                                key={featureRecord.Id}
+                                heading={featureRecord.Section_Heading__c} 
+                                image={featureRecord.Icon_Name__c}
+                                app-text={featureRecord.Section_Detail__c}
+                                app={featureRecord.Target_App__c}
+                                page={featureRecord.Target_Tab_Name__c}
+                                link-in-new-tab={pass_true}
+                                link-reference={featureRecord.NavigationType__c}
+                                object-name={featureRecord.ObjectName__c}
+                                object-id={featureRecord.Target_RecordId__c}
+                                related-entity={featureRecord.RelatedEntityAPIName__c}
+                                filter-name={featureRecord.Filter_Criteria__c}
+                                >
+                            </c-feature-child>
+                        </template>
+                    </template>
+                </lightning-layout-item>
+            </lightning-layout>
+        </div>
+    </lightning-card>
+</template>

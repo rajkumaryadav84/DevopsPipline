@@ -1,0 +1,30 @@
+<template>
+    <lightning-card title="Possible Duplicate Patient Accounts" icon-name="standard:account">
+        <div class="slds-p-horizontal_small slds-p-bottom_small">
+
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+            </template>
+
+            <template if:true={hasDuplicates}>
+                <p class="slds-text-body_small slds-text-color_weak slds-p-bottom_x-small">
+                    We found possible matching patient accounts. Click <b>Accept</b> to link this Lead to the correct account.
+                </p>
+                <lightning-datatable
+                    key-field="accountId"
+                    data={duplicates}
+                    columns={columns}
+                    onrowaction={handleRowAction}
+                    hide-checkbox-column>
+                </lightning-datatable>
+            </template>
+
+            <template if:true={showNoDuplicates}>
+                <p class="slds-text-body_small slds-text-color_weak">
+                    No duplicate person accounts found.
+                </p>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

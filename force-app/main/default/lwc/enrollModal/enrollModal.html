@@ -1,0 +1,9 @@
+<template>
+    <lightning-modal-header label="Enroll"></lightning-modal-header>
+    <lightning-modal-body>
+        <lightning-flow
+            flow-api-name={flowApiName}
+            onstatuschange={handleStatusChange}
+        ></lightning-flow>
+    </lightning-modal-body>
+</template>

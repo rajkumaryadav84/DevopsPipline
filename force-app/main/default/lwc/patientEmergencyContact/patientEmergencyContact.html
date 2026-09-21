@@ -1,0 +1,50 @@
+<template>
+    <lightning-card title="Emergency Contact" icon-name="standard:contact">
+
+        <div class="slds-p-around_medium">
+
+            <div class="slds-grid slds-wrap slds-gutters">
+
+                <!-- Contact Name -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="text"
+                        label="Contact Name"
+                        name="contactName"
+                        value={emergency.contactName}
+                        required
+                        onchange={handleChange}>
+                    </lightning-input>
+                </div>
+
+                <!-- Relationship -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-combobox
+                        label="Relationship"
+                        name="relationship"
+                        value={emergency.relationship}
+                        options={relationshipOptions}
+                        required
+                        onchange={handleChange}>
+                    </lightning-combobox>
+                </div>
+
+                <!-- Emergency Mobile -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="tel"
+                        label="Mobile Number"
+                        name="emergencyMobile"
+                        value={emergency.emergencyMobile}
+                        maxlength="10"
+                        required
+                        onchange={handleChange}>
+                    </lightning-input>
+                </div>
+
+            </div>
+
+        </div>
+
+    </lightning-card>
+</template>

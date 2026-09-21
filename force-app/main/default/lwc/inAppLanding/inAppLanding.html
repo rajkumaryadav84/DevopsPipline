@@ -1,0 +1,37 @@
+<template>
+    <lightning-card footer="" title="">
+        <div class="slds-grid slds-gutters ">
+            <div class="slds-col">
+                <div class="slds-box" >
+                    <h1 class="slds-text-heading_large slds-text-align_left">{app_welcome_text}</h1>
+                    <br/>
+                    <h3 class="slds-text-heading_small slds-text-align_left">{app_description}</h3>
+                </div>
+            </div>
+        </div>
+      
+        
+        <div class="c-container">
+            <lightning-layout>
+                <lightning-layout-item flexibility="auto" padding="around-small"> 
+
+                    <template if:true={landingItems.data}>
+                        <template for:each={landingItems.data} for:item="landingItem">
+                            <c-in-app-landing-child 
+                                key={landingItem.Id}
+                                heading= {landingItem.Section_Heading__c} 
+                                icon-name={landingItem.Icon_Name__c}
+                                cloud-detail={landingItem.Section_Detail__c}
+                                app={landingItem.Target_App__c}
+                                page={landingItem.Target_Tab_Name__c}
+                                link-in-new-tab={pass_false}
+                                link-reference={landingItem.NavigationType__c}>
+                            </c-in-app-landing-child>
+                        </template>
+                    </template>
+                       
+                </lightning-layout-item>
+            </lightning-layout>
+        </div>
+    </lightning-card>
+</template>

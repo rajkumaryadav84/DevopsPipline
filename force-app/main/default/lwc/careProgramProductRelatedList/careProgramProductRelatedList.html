@@ -1,0 +1,153 @@
+<template>
+    <lightning-card title="Care Program Products" icon-name="standard:product_item">
+        <div slot="actions">
+            <lightning-button
+                label="New"
+                variant="brand"
+                onclick={handleNewClick}
+                disabled={isNewDisabled}
+            ></lightning-button>
+        </div>
+
+        <template if:true={isLoading}>
+            <div class="slds-p-around_medium">
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+            </div>
+        </template>
+
+        <template if:false={isLoading}>
+            <template if:false={hasEnrollee}>
+                <div class="slds-p-around_medium slds-text-color_weak">
+                    No Care Program Enrollee found for this record.
+                </div>
+            </template>
+
+            <template if:true={hasEnrollee}>
+                <template if:true={hasNoProducts}>
+                    <div class="slds-p-around_medium slds-text-color_weak">
+                        {emptyStateMessage}
+                    </div>
+                </template>
+
+                <template if:false={hasNoProducts}>
+                    <lightning-datatable
+                        key-field="id"
+                        data={products}
+                        columns={columns}
+                        onrowaction={handleRowAction}
+                        hide-checkbox-column
+                    ></lightning-datatable>
+                </template>
+            </template>
+        </template>
+    </lightning-card>
+
+    <template if:true={isModalOpen}>
+        <section
+            role="dialog"
+            tabindex="-1"
+            aria-modal="true"
+            aria-labelledby="modal-heading"
+            class="slds-modal slds-fade-in-open"
+        >
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button
+                        class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close"
+                        onclick={closeModal}
+                    >
+                        <lightning-icon icon-name="utility:close" size="small" variant="inverse"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading" class="slds-text-heading_medium slds-hyphenate">
+                        New Care Program Product
+                    </h2>
+                </header>
+
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-record-edit-form
+                        object-api-name="CareProgramProduct"
+                        default-field-values={defaultFieldValues}
+                        onsuccess={handleFormSuccess}
+                        onerror={handleFormError}
+                    >
+                        <lightning-messages></lightning-messages>
+                        <lightning-input-field field-name="ProductId" required></lightning-input-field>
+                        <lightning-input-field field-name="Status"></lightning-input-field>
+                        <lightning-input-field field-name="Name"></lightning-input-field>
+                        <lightning-input-field field-name="CareProgramId"></lightning-input-field>
+
+                        <div class="slds-align_absolute-center slds-p-top_medium">
+                            <lightning-button
+                                class="slds-m-right_small"
+                                label="Cancel"
+                                onclick={closeModal}
+                            ></lightning-button>
+                            <lightning-button
+                                variant="brand"
+                                type="submit"
+                                label="Save"
+                            ></lightning-button>
+                        </div>
+                    </lightning-record-edit-form>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={isEditModalOpen}>
+        <section
+            role="dialog"
+            tabindex="-1"
+            aria-modal="true"
+            aria-labelledby="edit-modal-heading"
+            class="slds-modal slds-fade-in-open"
+        >
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button
+                        class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close"
+                        onclick={closeEditModal}
+                    >
+                        <lightning-icon icon-name="utility:close" size="small" variant="inverse"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="edit-modal-heading" class="slds-text-heading_medium slds-hyphenate">
+                        Edit Care Program Product
+                    </h2>
+                </header>
+
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-record-edit-form
+                        object-api-name="CareProgramProduct"
+                        record-id={selectedProductId}
+                        onsuccess={handleEditFormSuccess}
+                        onerror={handleFormError}
+                    >
+                        <lightning-messages></lightning-messages>
+                        <lightning-input-field field-name="ProductId"></lightning-input-field>
+                        <lightning-input-field field-name="Status"></lightning-input-field>
+                        <lightning-input-field field-name="Name"></lightning-input-field>
+
+                        <div class="slds-align_absolute-center slds-p-top_medium">
+                            <lightning-button
+                                class="slds-m-right_small"
+                                label="Cancel"
+                                onclick={closeEditModal}
+                            ></lightning-button>
+                            <lightning-button
+                                variant="brand"
+                                type="submit"
+                                label="Save"
+                            ></lightning-button>
+                        </div>
+                    </lightning-record-edit-form>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

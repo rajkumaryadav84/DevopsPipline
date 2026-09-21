@@ -1,0 +1,81 @@
+<template>
+    <lightning-card title="PDF Field Inspector - AdverseDrugReaction" icon-name="doctype:pdf">
+        <div class="slds-var-p-around_medium">
+
+            <template if:true={errorMessage}>
+                <div class="slds-var-m-bottom_small">
+                    <lightning-formatted-text
+                        value={errorMessage}
+                        class="slds-text-color_error"
+                    ></lightning-formatted-text>
+                </div>
+            </template>
+
+            <lightning-button
+                variant="brand"
+                label="Load PDF & Inspect Fields"
+                onclick={handleLoadPdf}
+                disabled={isLoading}
+                class="slds-var-m-bottom_medium"
+            ></lightning-button>
+
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Working" size="small"></lightning-spinner>
+            </template>
+
+            <template if:true={hasFields}>
+                <lightning-datatable
+                    key-field="name"
+                    data={fields}
+                    columns={columns}
+                    hide-checkbox-column
+                ></lightning-datatable>
+
+                <div class="slds-var-m-top_large slds-box">
+                    <lightning-button
+                        variant="neutral"
+                        label="Fill Sample Values (text fields only)"
+                        onclick={handleFillSampleValues}
+                        disabled={disableActions}
+                        class="slds-var-m-bottom_medium"
+                    ></lightning-button>
+
+                    <h3 class="slds-text-heading_small slds-var-m-bottom_small">Edit a field value</h3>
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-combobox
+                                label="Field"
+                                value={selectedFieldName}
+                                options={fieldNameOptions}
+                                onchange={handleFieldSelect}
+                            ></lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                label="New Value"
+                                value={selectedFieldValue}
+                                onchange={handleValueChange}
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3 slds-align-bottom">
+                            <lightning-button
+                                label="Apply Value"
+                                onclick={handleApplyValue}
+                                disabled={disableActions}
+                                class="slds-var-m-top_medium"
+                            ></lightning-button>
+                        </div>
+                    </div>
+
+                    <lightning-button
+                        variant="success"
+                        label="Save & Download PDF"
+                        onclick={handleSaveAndDownload}
+                        disabled={disableActions}
+                        class="slds-var-m-top_medium"
+                    ></lightning-button>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

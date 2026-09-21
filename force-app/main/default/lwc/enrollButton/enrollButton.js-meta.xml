@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Enroll Button</masterLabel>
+    <targets>
+        <target>lightning__HomePage</target>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__HomePage,lightning__AppPage,lightning__RecordPage">
+            <property
+                name="flowApiName"
+                type="String"
+                default="Create_Lead_Screen_Flow"
+                label="Flow API Name"
+                description="API name of the screen flow to launch when Enroll is clicked"
+            />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

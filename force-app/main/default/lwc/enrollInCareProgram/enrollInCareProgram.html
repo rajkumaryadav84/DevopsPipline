@@ -1,0 +1,76 @@
+<template>
+    <!-- Modal Outer Wrapper for Quick Action -->
+    <div class="quick-action-modal-container">
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Processing..." size="medium"></lightning-spinner>
+        </template>
+
+        <!-- Quick Action Header -->
+        <header class="slds-modal__header custom-modal-header">
+            <lightning-icon icon-name="standard:care_program" size="small" class="slds-m-right_small"></lightning-icon>
+            <h2 class="slds-modal__title slds-hyphenate slds-text-heading_medium">Enroll in New Care Program</h2>
+        </header>
+
+        <!-- Quick Action Body Content -->
+        <div class="slds-modal__content slds-p-around_medium custom-modal-body">
+            <!-- Program Selection -->
+            <div class="slds-form-element slds-m-bottom_medium">
+                <lightning-combobox
+                    name="careProgram"
+                    label="Select Care Program"
+                    value={selectedProgramId}
+                    placeholder="Choose a program to enroll..."
+                    options={programOptions}
+                    onchange={handleProgramChange}
+                    required>
+                </lightning-combobox>
+            </div>
+
+            <!-- Program Details Preview -->
+            <template if:true={selectedProgramDetails}>
+                <div class="slds-box slds-theme_shade slds-m-bottom_medium program-detail-box">
+                    <p class="slds-text-title_bold text-primary">{selectedProgramDetails.Name}</p>
+                    <p class="slds-text-body_small slds-m-top_xx-small">{selectedProgramDetails.Description}</p>
+                </div>
+            </template>
+
+            <!-- Duplicate Warning Alert Box (Story 2) -->
+            <template if:true={hasActiveEnrollee}>
+                <div class="slds-notify slds-notify_alert slds-theme_warning slds-radius-medium alert-container" role="alert">
+                    <lightning-icon icon-name="utility:warning" alternative-text="Warning" size="small" class="slds-m-right_x-small"></lightning-icon>
+                    <div class="slds-notify__content">
+                        <h2 class="slds-text-heading_small font-weight-bold">Existing Active Enrollment Found</h2>
+                        <p class="slds-m-top_xx-small">
+                            This patient is already actively enrolled in <strong>{existingEnrollee.CareProgramName}</strong> with status <strong>{existingEnrollee.Status}</strong>.
+                        </p>
+                        <div class="slds-m-top_small">
+                            <lightning-button 
+                                label="View Existing Enrollee Record" 
+                                variant="brand-outline" 
+                                icon-name="utility:new_window"
+                                onclick={navigateToExistingEnrollee}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <!-- Quick Action Integrated Footer -->
+        <footer class="slds-modal__footer custom-modal-footer slds-grid slds-grid_align-end">
+            <lightning-button 
+                label="Cancel" 
+                variant="neutral" 
+                onclick={handleCancel} 
+                class="slds-m-right_x-small">
+            </lightning-button>
+            <lightning-button 
+                label="Enroll Patient" 
+                variant="brand" 
+                onclick={handleEnroll} 
+                disabled={isEnrollDisabled}>
+            </lightning-button>
+        </footer>
+    </div>
+</template>

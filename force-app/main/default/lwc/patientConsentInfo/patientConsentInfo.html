@@ -1,0 +1,48 @@
+<template>
+    <lightning-card title="HIPAA & Consent" icon-name="standard:document">
+
+        <div class="slds-p-around_medium">
+
+            <!-- HIPAA -->
+            <lightning-input
+                type="checkbox"
+                label="HIPAA Privacy Notice Acknowledgement"
+                name="hipaaAck"
+                checked={consent.hipaaAck}
+                onchange={handleCheckbox}>
+            </lightning-input>
+
+            <!-- Consent -->
+            <lightning-input
+                type="checkbox"
+                label="Consent to Treatment"
+                name="consentTreatment"
+                checked={consent.consentTreatment}
+                onchange={handleCheckbox}>
+            </lightning-input>
+
+            <!-- Electronic Communication -->
+            <lightning-input
+                type="checkbox"
+                label="Authorization for Electronic Communication"
+                name="electronicCommAuth"
+                checked={consent.electronicCommAuth}
+                onchange={handleCheckbox}>
+            </lightning-input>
+
+            <br/>
+
+            <!-- Communication Preference -->
+
+            <lightning-checkbox-group
+                name="communicationPreference"
+                label="Communication Preference"
+                options={communicationOptions}
+                value={consent.communicationPreference}
+                onchange={handleCommunication}>
+            </lightning-checkbox-group>
+
+        </div>
+
+    </lightning-card>
+</template>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<script src="html2pdf.js"></script>
+</head>
+<body>
+<div id="render-target" style="width: 700px;"></div>
+<script>
+    window.addEventListener('message', function (event) {
+        var payload = event.data || {};
+        if (payload.type !== 'RENDER_PDF') {
+            return;
+        }
+        var target = document.getElementById('render-target');
+        target.innerHTML = payload.html;
+
+        window
+            .html2pdf()
+            .set({
+                margin: [15, 15, 15, 15],
+                html2canvas: { foreignObjectRendering: false, useCORS: false }
+            })
+            .from(target)
+            .output('datauristring')
+            .then(function (dataUri) {
+                event.source.postMessage(
+                    { type: 'RENDER_PDF_RESULT', success: true, dataUri: dataUri },
+                    event.origin
+                );
+            })
+            .catch(function (err) {
+                event.source.postMessage(
+                    { type: 'RENDER_PDF_RESULT', success: false, error: String(err && err.message ? err.message : err) },
+                    event.origin
+                );
+            });
+    });
+
+    window.addEventListener('load', function () {
+        if (window.parent) {
+            window.parent.postMessage({ type: 'RENDERER_READY' }, '*');
+        }
+    });
+</script>
+</body>
+</html>
