@@ -21,102 +21,201 @@ on:
   pull_request:
     branches:
       - SFQA
-      - main      
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
 
     steps:
 
+      # ----------------------------------------------------------------
+      # 1. Checkout repository with full history for Git diff calculations
+      # ----------------------------------------------------------------
       - name: Checkout Full Git History
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # ----------------------------------------------------------------
+      # 2. Install Salesforce CLI (sf)
+      # ----------------------------------------------------------------
       - name: Install Salesforce CLI
         run: |
+          echo "Installing Salesforce CLI globally..."
           npm install --global @salesforce/cli
+          echo "Verifying Salesforce CLI installation:"
           sf --version
 
+      # ----------------------------------------------------------------
+      # 3. Install sfdx-git-delta plugin for incremental deployments
+      # ----------------------------------------------------------------
       - name: Install sfdx-git-delta
-        run: echo y | sf plugins install sfdx-git-delta
-
-      - name: Set Environment Variables by Branch
         run: |
+          echo "Installing sfdx-git-delta plugin..."
+          echo y | sf plugins install sfdx-git-delta
+
+      # ----------------------------------------------------------------
+      # 4. Set environment variables based on the target branch
+      # ----------------------------------------------------------------
+      - name: Set Default Environment Variables by Branch
+        run: |
+          echo "Current branch/ref name: ${{ github.ref_name }}"
+          echo "Base ref name: ${{ github.base_ref }}"
+          
           if [ "${{ github.ref_name }}" == "SFQA" ] || \
              [ "${{ github.base_ref }}" == "SFQA" ]; then
             echo "AUTH_URL=${{ secrets.SFDX_AUTH_URL_QA }}" >> $GITHUB_ENV
             echo "TEST_LEVEL=NoTestRun" >> $GITHUB_ENV
             echo "ENV_NAME=QA" >> $GITHUB_ENV
+            echo "-> Matched SFQA branch. Setting target to QA environment."
 
           elif [ "${{ github.ref_name }}" == "main" ] || \
                [ "${{ github.base_ref }}" == "main" ]; then
             echo "AUTH_URL=${{ secrets.SFDX_AUTH_URL_PROD }}" >> $GITHUB_ENV
             echo "TEST_LEVEL=RunAllTestsInOrg" >> $GITHUB_ENV
             echo "ENV_NAME=NagDev" >> $GITHUB_ENV
+            echo "-> Matched main branch. Setting target to Production environment."
           fi
 
+      # ----------------------------------------------------------------
+      # 5. Parse PR body and comments for 'Run Test :' configurations
+      # ----------------------------------------------------------------
+      - name: Parse Run Test Configuration from PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Fetching PR body and comments using GitHub CLI..."
+          PR_TEXT=$(gh pr view ${{ github.event.pull_request.number }} --json body,comments --jq '.body + " " + (.comments[].body // empty | join(" "))')
+          
+          echo "Searching for 'Run Test :' configuration in PR text..."
+          RUN_TEST_MATCH=$(echo "$PR_TEXT" | grep -i "Run Test\s*:" | tail -n 1 | sed 's/.*Run Test\s*:\s*//I' | xargs)
+          
+          if [ -n "$RUN_TEST_MATCH" ]; then
+            echo "Found configuration value: '$RUN_TEST_MATCH'"
+            case "$RUN_TEST_MATCH" in
+              NoTestRun|RunLocalTests|RunAllTestsInOrg|RunSpecifiedTests)
+                echo "TEST_LEVEL=$RUN_TEST_MATCH" >> $GITHUB_ENV
+                echo "-> Standard test level detected. Setting TEST_LEVEL to: $RUN_TEST_MATCH"
+                ;;
+              *)
+                echo "TEST_LEVEL=RunSpecifiedTests" >> $GITHUB_ENV
+                echo "SPECIFIC_TESTS=$RUN_TEST_MATCH" >> $GITHUB_ENV
+                echo "-> Custom test classes detected. Forcing TEST_LEVEL=RunSpecifiedTests with: $RUN_TEST_MATCH"
+                ;;
+            esac
+          else
+            echo "No 'Run Test :' override found. Using default TEST_LEVEL: ${{ env.TEST_LEVEL }}"
+          fi
+
+      # ----------------------------------------------------------------
+      # 6. Authenticate to the target Salesforce Org
+      # ----------------------------------------------------------------
       - name: Authenticate to Salesforce (${{ env.ENV_NAME }})
         run: |
+          echo "Authenticating to Salesforce target org (${{ env.ENV_NAME }})..."
           echo "${{ env.AUTH_URL }}" | sf org login sfdx-url \
             --alias target-org \
             --set-default \
             --sfdx-url-stdin
+          echo "Authentication successful."
 
+      # ----------------------------------------------------------------
+      # 7. Generate Delta Package using sfdx-git-delta
+      # ----------------------------------------------------------------
       - name: Generate Delta Package
         run: |
           mkdir -p delta
-          sf sgd source delta \
-            --to HEAD \
-            --from HEAD~1 \
-            --output-dir delta \
-            --source-dir force-app \
-            --generate-delta
+          echo "Generating delta package..."
+          
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "Pull request detected. Comparing HEAD against origin/${{ github.base_ref }}..."
+            sf sgd source delta \
+              --to HEAD \
+              --from origin/${{ github.base_ref }} \
+              --output-dir delta \
+              --source-dir force-app \
+              --generate-delta
+          else
+            echo "Push event detected. Comparing HEAD against HEAD~1..."
+            sf sgd source delta \
+              --to HEAD \
+              --from HEAD~1 \
+              --output-dir delta \
+              --source-dir force-app \
+              --generate-delta
+          fi
+          
           echo "====== Delta Components for ${{ env.ENV_NAME }} ======"
           cat delta/package/package.xml
 
+      # ----------------------------------------------------------------
+      # 8. Validate Delta Package (Pull Request event)
+      # ----------------------------------------------------------------
       - name: Validate Delta (${{ env.ENV_NAME }})
         if: github.event_name == 'pull_request'
         run: |
           if grep -q '<members>' delta/package/package.xml; then
-            VALIDATE_TEST_LEVEL=${{ env.TEST_LEVEL }}
-            if [ "$VALIDATE_TEST_LEVEL" == "NoTestRun" ]; then
-              VALIDATE_TEST_LEVEL="RunLocalTests"
+            echo "Metadata changes found in package.xml."
+            
+            if [ "${{ env.TEST_LEVEL }}" == "RunSpecifiedTests" ] && [ -n "${{ env.SPECIFIC_TESTS }}" ]; then
+              echo "Running validation with specified test classes: ${{ env.SPECIFIC_TESTS }}"
+              sf project deploy validate \
+                --manifest delta/package/package.xml \
+                --target-org target-org \
+                --test-level RunSpecifiedTests \
+                --tests ${{ env.SPECIFIC_TESTS }} \
+                --wait 60
+            else
+              echo "Running validation with test level: ${{ env.TEST_LEVEL }}"
+              sf project deploy validate \
+                --manifest delta/package/package.xml \
+                --target-org target-org \
+                --test-level ${{ env.TEST_LEVEL }} \
+                --wait 60
             fi
-            sf project deploy validate \
-              --manifest delta/package/package.xml \
-              --target-org target-org \
-              --test-level $VALIDATE_TEST_LEVEL \
-              --wait 60
+            echo "Validation completed successfully."
           else
             echo "No Salesforce metadata changes found. Skipping validation."
           fi
 
+      # ----------------------------------------------------------------
+      # 9. Deploy Delta Package (Push event)
+      # ----------------------------------------------------------------
       - name: Deploy Delta to ${{ env.ENV_NAME }}
         if: github.event_name == 'push'
         run: |
           if grep -q '<members>' delta/package/package.xml; then
+            echo "Deploying delta package to ${{ env.ENV_NAME }} with test level: ${{ env.TEST_LEVEL }}..."
             sf project deploy start \
               --manifest delta/package/package.xml \
               --target-org target-org \
               --test-level ${{ env.TEST_LEVEL }} \
               --wait 60
+            echo "Deployment completed successfully."
           else
             echo "No Salesforce metadata changes found. Skipping deployment."
           fi
 
+      # ----------------------------------------------------------------
+      # 10. Deploy Destructive Changes (Push event)
+      # ----------------------------------------------------------------
       - name: Deploy Destructive Changes
         if: github.event_name == 'push'
         run: |
           if [ -f "delta/destructiveChanges/destructiveChanges.xml" ] && \
              grep -q '<types>' delta/destructiveChanges/destructiveChanges.xml; then
+            echo "Destructive changes detected. Processing deletion..."
             sf project deploy start \
               --manifest delta/destructiveChanges/package.xml \
               --post-destructive-changes delta/destructiveChanges/destructiveChanges.xml \
               --target-org target-org \
               --test-level NoTestRun \
               --wait 30
+            echo "Destructive changes applied successfully."
           else
             echo "No destructive changes found. Skipping."
           fi
