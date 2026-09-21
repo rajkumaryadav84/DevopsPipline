@@ -10,5 +10,8 @@ public with sharing class MyAccController {
     public static List<Contact> getContacts() {
         return [SELECT Id, FirstName, LastName FROM Contact LIMIT 10];
     }
+    public static void getName(){
+        System.debug('NAme');
+    }
 
 }
