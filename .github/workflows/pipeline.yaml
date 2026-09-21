@@ -1,14 +1,5 @@
 # ================================================================
 # Salesforce Delta Deployment Pipeline
-#
-# FLOW:
-# 1. Developer creates PR  → Validation runs automatically
-# 2. Validation passes     → Reviewer approves PR manually  
-# 3. PR merged             → Actual deployment runs
-#
-# BRANCH → ORG MAPPING:
-# SFQA → DEV Sandbox    (NoTestRun)
-# master    → PRODUCTION     (RunAllTestsInOrg)
 # ================================================================
 
 name: Salesforce Delta Pipeline
@@ -21,7 +12,7 @@ on:
   pull_request:
     branches:
       - SFQA
-      - master
+      - master      
 
 jobs:
   deploy:
@@ -76,7 +67,7 @@ jobs:
                [ "${{ github.base_ref }}" == "master" ]; then
             echo "AUTH_URL=${{ secrets.SFDX_AUTH_URL_PROD }}" >> $GITHUB_ENV
             echo "TEST_LEVEL=RunAllTestsInOrg" >> $GITHUB_ENV
-            echo "ENV_NAME=NagDev" >> $GITHUB_ENV
+            echo "ENV_NAME=Production" >> $GITHUB_ENV
             echo "-> Matched master branch. Setting target to Production environment."
           fi
 
@@ -88,14 +79,31 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Fetching PR body and comments using GitHub CLI..."
-          PR_TEXT=$(gh pr view ${{ github.event.pull_request.number }} --json body,comments --jq '.body + " " + (.comments[].body // empty | join(" "))')
+          echo "Fetching PR body..."
+          PR_BODY=$(gh pr view ${{ github.event.pull_request.number }} --json body --jq '.body // ""')
           
-          echo "Searching for 'Run Test :' configuration in PR text..."
-          RUN_TEST_MATCH=$(echo "$PR_TEXT" | grep -i "Run Test\s*:" | tail -n 1 | sed 's/.*Run Test\s*:\s*//I' | xargs)
+          echo "================ PR BODY START ================"
+          echo "$PR_BODY"
+          echo "================ PR BODY END =================="
+
+          echo "Fetching PR comments..."
+          PR_COMMENTS=$(gh pr view ${{ github.event.pull_request.number }} --json comments --jq '[.comments[].body] | join(" ") // ""')
           
-          if [ -n "$RUN_TEST_MATCH" ]; then
-            echo "Found configuration value: '$RUN_TEST_MATCH'"
+          echo "================ PR COMMENTS START ============"
+          echo "$PR_COMMENTS"
+          echo "================ PR COMMENTS END =============="
+
+          # Combine body and comments for searching
+          PR_TEXT="$PR_BODY $PR_COMMENTS"
+          
+          echo "Searching for 'Run Test :' configuration..."
+          MATCHED_LINE=$(echo "$PR_TEXT" | grep -iE "Run Test\s*:" | tail -n 1)
+          
+          if [ -n "$MATCHED_LINE" ]; then
+            echo "Found matching line: '$MATCHED_LINE'"
+            RUN_TEST_MATCH=$(echo "$MATCHED_LINE" | sed -E 's/.*[Rr][Uu][nN] [Tt][eE][sS][tT]\s*:\s*//' | xargs)
+            echo "Extracted value: '$RUN_TEST_MATCH'"
+            
             case "$RUN_TEST_MATCH" in
               NoTestRun|RunLocalTests|RunAllTestsInOrg|RunSpecifiedTests)
                 echo "TEST_LEVEL=$RUN_TEST_MATCH" >> $GITHUB_ENV
@@ -182,7 +190,8 @@ jobs:
             echo "Validation completed successfully."
           else
             echo "No Salesforce metadata changes found. Skipping validation."
-          fi      
+          fi
+
       # ----------------------------------------------------------------
       # 9. Deploy Delta Package (Push event)
       # ----------------------------------------------------------------

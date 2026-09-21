@@ -1,10 +1,17 @@
 public with sharing class MyAccController {
     public MyAccController() {
-
+        System.debug('MyAccController');
     }
 
     public static List<Account> getAccounts() {
         return [SELECT Id, Name FROM Account LIMIT 10];
     }
-    
+
+    public static List<Contact> getContacts() {
+        return [SELECT Id, FirstName, LastName FROM Contact LIMIT 10];
+    }
+    public static void getName(){
+        System.debug('NAme');
+    }
+
 }
