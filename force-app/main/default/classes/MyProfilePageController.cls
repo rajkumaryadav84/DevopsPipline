@@ -11,6 +11,9 @@ public with sharing class MyProfilePageController {
         return user;
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
     public MyProfilePageController() {
         user = [SELECT id, email, username, usertype, communitynickname, timezonesidkey, languagelocalekey, firstname, lastname, phone, title,
                 street, city, country, postalcode, state, localesidkey, mobilephone, extension, fax, contact.email
